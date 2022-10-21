@@ -7,8 +7,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.validators import UniqueValidator
 from django.core.validators import MinLengthValidator
 
-from .models import Profile
-
+from players.serializers import PlayerSerializer
+from trades.serializers import TradeSerializer
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
@@ -51,21 +51,11 @@ class LoginSerializer(serializers.Serializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField(read_only=True)
-    nickname = serializers.CharField(write_only=True, required=True)
+    players = PlayerSerializer(many=True, read_only=True)
+    selling = TradeSerializer(many=True, read_only=True)
+    buying = TradeSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Profile
-        fields = ("user", "nickname")
-
-    def validate(self, data):
-        # 여기에 data['nickname'] 등으로 유효성 검사
-        return data
-
-    def update(self, instance, validated_data):
-        print("sad")
-        instance.nickname = validated_data['nickname']
-
-        instance.save()
-        return instance
+        model = User
+        fields = ("id", "username", "email", "date_joined", "players", "selling", "buying")
 
