@@ -52,7 +52,7 @@ class LoginSerializer(serializers.Serializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
-    # user = serializers.PrimaryKeyRelatedField(read_only=True)
+    nickname = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = Profile

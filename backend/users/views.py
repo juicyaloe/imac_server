@@ -27,7 +27,8 @@ class LoginView(generics.GenericAPIView):
         return Response({"Token": token.key}, status=status.HTTP_200_OK)
 
 class ProfileView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    #permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
     serializer_class = ProfileSerializer
 
     def get_profile(self, request):

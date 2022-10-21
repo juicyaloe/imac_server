@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class TempDataConfig(AppConfig):
+class PlayersConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "temp_data"
+    name = "players"
