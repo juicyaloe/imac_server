@@ -5,8 +5,10 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.validators import UniqueValidator
+from django.core.validators import MinLengthValidator
 
 from .models import Profile
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
@@ -16,20 +18,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         required=True,
-        validators=[validate_password],
+        validators=[MinLengthValidator(8, '비밀번호를 8자 이상 적어주세요')],
     )
-    password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'password2', 'email')
-
-    def validate(self, data):
-        if data['password'] != data['password2']:
-            raise serializers.ValidationError(
-                {"password": "Password fields didn`t match."}
-            )
-        return data
+        fields = ('username', 'password', 'email')
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -55,7 +49,23 @@ class LoginSerializer(serializers.Serializer):
         raise serializers.ValidationError(
             {"error": "Unable to log in with provided credentials."})
 
+
 class ProfileSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+    # user = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Profile
-        fields = ('nickname',)
+        fields = ("user", "nickname")
+
+    def validate(self, data):
+        # 여기에 data['nickname'] 등으로 유효성 검사
+        return data
+
+    def update(self, instance, validated_data):
+        print("sad")
+        instance.nickname = validated_data['nickname']
+
+        instance.save()
+        return instance
+
