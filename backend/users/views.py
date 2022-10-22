@@ -30,7 +30,7 @@ class LoginView(generics.GenericAPIView):
 
 
 class ProfilePublicView(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.exclude(id=1)
     serializer_class = ProfilePublicSerializer
 
 
