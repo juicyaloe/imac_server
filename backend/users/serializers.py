@@ -64,10 +64,14 @@ class ProfilePublicSerializer(serializers.ModelSerializer):
 
 class ProfilePrivateSerializer(serializers.ModelSerializer):
     # read only serializer
+
+    # user patch는 안정성 검증 후 시도
+    # username = serializers.CharField(required=False)
+
     players = SimplePlayerSerializer(many=True, read_only=True)
     selling = SimpleTradeSerializer(many=True, read_only=True)
     buying = SimpleTradeSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ("id", "username", "players", 'selling', 'buying')
+        fields = ("id", "username", "email", "date_joined", "players", 'selling', 'buying')
