@@ -28,6 +28,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         )
         model = Player
 
+
 class SimplePlayerSerializer(serializers.ModelSerializer):
     # Read 용도로 단순하게 구현하는 Serializer
     class Meta:

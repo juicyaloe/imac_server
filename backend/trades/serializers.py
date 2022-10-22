@@ -53,6 +53,9 @@ class TradeSerializer(serializers.ModelSerializer):
 
 class SimpleTradeSerializer(serializers.ModelSerializer):
     # Read 용도로 단순하게 구현하는 Serializer
+    targetPlayer = serializers.SlugRelatedField(slug_field='name',
+                                                queryset=Player.objects.all(),
+                                                validators=[UniqueValidator(queryset=Trade.objects.all())])
     class Meta:
-        fields = ("id",)
+        fields = ("id","targetPlayer")
         model = Trade
