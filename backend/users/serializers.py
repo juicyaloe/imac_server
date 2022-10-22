@@ -7,8 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.validators import UniqueValidator
 from django.core.validators import MinLengthValidator
 
-from players.serializers import PlayerSerializer
-from trades.serializers import TradeSerializer
+from players.serializers import SimplePlayerSerializer
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
@@ -50,12 +49,14 @@ class LoginSerializer(serializers.Serializer):
             {"error": "Unable to log in with provided credentials."})
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    players = PlayerSerializer(many=True, read_only=True)
-    selling = TradeSerializer(many=True, read_only=True)
-    buying = TradeSerializer(many=True, read_only=True)
+class PublicProfileSerializer(serializers.ModelSerializer):
+    # read only serializer
+    players = SimplePlayerSerializer(many=True, read_only=True)
+
+    # selling = TradeSerializer(many=True, read_only=True)
+    # buying = TradeSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "date_joined", "players", "selling", "buying")
+        fields = ("id", "username", "players")
 
