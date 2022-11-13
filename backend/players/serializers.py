@@ -10,10 +10,10 @@ class PlayerSerializer(serializers.ModelSerializer):
     name = serializers.CharField(min_length=2, max_length=32, validators=[UniqueValidator(queryset=Player.objects.all())])
 
     # Read 때는 string 변환 용도, Write 때는 username 형식(존재 검사 O)으로 받되 필수 아님
-    # owner = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all(), required=False)
+    owner = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all(), required=False)
 
     # Read 때는 pk 변환 용도, Write 때는 pk 형식(존재 검사 O)으로 받되 필수 아님
-    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
+    # owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
 
     # 단순히 보여주기만 하는 필드, Write 때 신경쓸 필요 없음
     trading = SimpleTradeSerializer(read_only=True)

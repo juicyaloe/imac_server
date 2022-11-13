@@ -10,16 +10,16 @@ class TradeSerializer(serializers.ModelSerializer):
     # description은 DB를 따라가지만, default, null, blank가 safe 하기 때문에 read, write 걱정 없음
 
     # Read 때는 string 변환 용도, Write 때는 username 형식(존재 검사 O)으로 받되 필수로 지정
-    # seller = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
+    seller = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
 
     # Read 때는 pk 변환 용도, Write 때는 pk 형식(존재 검사 O)으로 받되 필수로 지정
-    seller = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    # seller = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     # Read 때는 string 변환 용도, Write 때는 username 형식(존재 검사 O)으로 받되 필수로 지정
-    # buyer = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
+    buyer = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
 
     # Read 때는 pk 변환 용도, Write 때는 pk 형식(존재 검사 O)으로 받되 필수로 지정
-    buyer = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    # buyer = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     # Read 때는 string 변환 용도,
     # Write 때는 name 형식(존재 검사 O, 유일성 검사)으로 받되 필수로 지정

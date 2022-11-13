@@ -39,14 +39,14 @@ class ProfilePrivateView(generics.GenericAPIView):
     serializer_class = ProfilePrivateSerializer
 
     def input_permission(self, request):
-        if "id" not in request.data:
-            raise exceptions.ParseError("id 값이 없습니다.")
-        id = request.data['id']
+        if "username" not in request.data:
+            raise exceptions.ParseError("username 값이 없습니다.")
+        username = request.data['username']
 
-        if id == 1:
+        if username == 'admin':
             raise exceptions.ParseError("admin은 조회할 수 없습니다.")
 
-        queryset = User.objects.filter(id=id).first()
+        queryset = User.objects.filter(username=username).first()
         if not queryset:
             raise exceptions.ParseError("해당 User는 없습니다.")
         return queryset
