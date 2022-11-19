@@ -3,11 +3,13 @@ from django.contrib.auth.models import User
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .serializers import RegisterSerializer, LoginSerializer, ProfilePublicSerializer, ProfilePrivateSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserPublicSerializer, UserPrivateSerializer, ProfilePrivateSerializer
 from rest_framework import permissions
 from rest_framework.views import exceptions
 
 from .permissions import PrivateOnlyMyToken
+
+from .models import Profile
 
 # Create your views here.
 
@@ -29,14 +31,14 @@ class LoginView(generics.GenericAPIView):
         return Response({"Token": token.key}, status=status.HTTP_200_OK)
 
 
-class ProfilePublicView(generics.ListAPIView):
+class UserPublicView(generics.ListAPIView):
     queryset = User.objects.exclude(id=1)
-    serializer_class = ProfilePublicSerializer
+    serializer_class = UserPublicSerializer
 
 
-class ProfilePrivateView(generics.GenericAPIView):
+class UserPrivateView(generics.GenericAPIView):
     permission_classes = [PrivateOnlyMyToken]
-    serializer_class = ProfilePrivateSerializer
+    serializer_class = UserPrivateSerializer
 
     def input_permission(self, request):
         if "username" not in request.data:
@@ -54,15 +56,20 @@ class ProfilePrivateView(generics.GenericAPIView):
     def get(self, request):
         queryset = self.input_permission(request)
         self.check_object_permissions(self.request, queryset)
-        serializer = self.get_serializer(queryset)
+        serializer = self.serializer_class(queryset)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # def patch(self, request):
-    #     queryset = self.input_permission(request)
-    #     serializer = self.get_serializer(queryset, data=request.data)
-    #
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request):
+        user_queryset = self.input_permission(request)
+        self.check_object_permissions(self.request, user_queryset)
+        user_serializer = UserPrivateSerializer(user_queryset, data=request.data)
 
+        profile_queryset = Profile.objects.get(user=user_queryset)
+        profile_serializer = ProfilePrivateSerializer(profile_queryset, data=request.data)
+
+        if user_serializer.is_valid() and profile_serializer.is_valid():
+            profile_serializer.save()
+            user_serializer.save()
+
+            return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"user": user_serializer.errors, "profile": profile_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

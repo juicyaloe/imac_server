@@ -10,6 +10,8 @@ from django.core.validators import MinLengthValidator
 from players.serializers import SimplePlayerSerializer
 from trades.serializers import SimpleTradeSerializer
 
+from .models import Profile
+
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
@@ -50,28 +52,40 @@ class LoginSerializer(serializers.Serializer):
             {"error": "Unable to log in with provided credentials."})
 
 
-class ProfilePublicSerializer(serializers.ModelSerializer):
+class UserPublicSerializer(serializers.ModelSerializer):
     # read only serializer
     players = SimplePlayerSerializer(many=True, read_only=True)
-
-    # selling = TradeSerializer(many=True, read_only=True)
-    # buying = TradeSerializer(many=True, read_only=True)
+    nickname = serializers.SlugRelatedField(slug_field='nickname', queryset=Profile.objects.all(), source="profile")
 
     class Meta:
         model = User
-        fields = ("id", "username", "players")
+        fields = ("id", "username", "nickname", "players")
 
+class UserPrivateSerializer(serializers.ModelSerializer):
 
-class ProfilePrivateSerializer(serializers.ModelSerializer):
     # read only serializer
-
-    # user patch는 안정성 검증 후 시도
-    # username = serializers.CharField(required=False)
-
     players = SimplePlayerSerializer(many=True, read_only=True)
     selling = SimpleTradeSerializer(many=True, read_only=True)
     buying = SimpleTradeSerializer(many=True, read_only=True)
 
+    nickname = serializers.SerializerMethodField()
+    def get_nickname(self, obj):
+        return obj.profile.nickname
+
+    budget = serializers.SerializerMethodField()
+    def get_budget(self, obj):
+        return obj.profile.budget
+
+    # write only
+    # email field
+
     class Meta:
         model = User
-        fields = ("id", "username", "email", "date_joined", "players", 'selling', 'buying')
+        fields = ("id", "username", "nickname", "email", "players", 'selling', 'buying', 'budget', "date_joined")
+        read_only_fields = ("id", "username", "nickname", "players", 'selling', 'buying', 'budget', "date_joined")
+
+class ProfilePrivateSerializer(serializers.ModelSerializer):
+    # write only
+    class Meta:
+        model = Profile
+        fields = ('nickname', 'budget')
