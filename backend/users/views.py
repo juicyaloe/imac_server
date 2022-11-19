@@ -53,7 +53,7 @@ class UserPrivateView(generics.GenericAPIView):
             raise exceptions.ParseError("해당 User는 없습니다.")
         return queryset
 
-    def get(self, request):
+    def post(self, request):
         queryset = self.input_permission(request)
         self.check_object_permissions(self.request, queryset)
         serializer = self.serializer_class(queryset)
