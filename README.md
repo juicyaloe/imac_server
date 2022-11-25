@@ -1,6 +1,6 @@
 # imac_server
 
-### Django를 활용한 야구 게임 앱 서버입니다.
+### Django를 활용한 야구 게임 앱 서버입니다. ( 개발 중 )
 
 #### 사용한 스택
 - nginx + Docker + Django Rest Framework + Postgres
